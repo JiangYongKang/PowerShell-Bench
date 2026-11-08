@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "task001",
+  "version": "0.1.0",
+  "name": "Hello World",
+  "description": "验证临时工作区、Agent 执行和独立验收流程的最小任务。",
+  "status": "ready",
+  "category": "smoke",
+  "tags": [
+    "hello-world",
+    "smoke-test"
+  ],
+  "powershell": {
+    "versions": [
+      "5.1"
+    ]
+  },
+  "workspace": {
+    "mode": "temporary",
+    "copy_fixtures": true
+  },
+  "agent": {
+    "timeout_sec": 300,
+    "max_turns": 20
+  },
+  "verifier": {
+    "mode": "process",
+    "timeout_sec": 60
+  },
+  "artifacts": [
+    "hello.txt"
+  ]
+}

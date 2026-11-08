@@ -42,6 +42,12 @@ PowerShellBench 借鉴 Terminal-Bench 的独立任务、结果验收和多轮执
 
 如果目标是评价 PowerShell 能力，应尽量减少 Python、cmd 和 WSL Bash 等替代路径，并记录模型是否绕开了 PowerShell。独立工作目录本身不是安全沙箱；执行不可信命令时，需要使用低权限机器或专用虚拟机。
 
+## 运行方案
+
+首版每次运行创建一个临时 Windows 工作区，先将任务输入复制进去，再让 Agent 在这个目录中执行 PowerShell。Agent 结束后，由独立的 PowerShell 验收进程读取同一工作区，运行 `check.ps1` 并输出 JSON 结果。
+
+运行器目前只保留占位，后续单独设计。首版不实现 Agent trials 调度、排行榜、数据集发布和复杂的社区贡献流水线。
+
 ## 项目结构
 
 ```text
@@ -52,17 +58,22 @@ PowerShell-Bench/
 ├── runner/
 │   └── Invoke-Benchmark.ps1
 └── tasks/
-    └── <task-id>/
-        ├── task.yaml
-        ├── instruction.md
-        ├── setup.ps1
-        ├── check.ps1
-        ├── reference.ps1
-        └── fixtures/
+    ├── task001/
+    │   ├── README.md
+    │   ├── task.json
+    │   ├── instruction.md
+    │   ├── setup.ps1
+    │   ├── check.ps1
+    │   ├── reference.ps1
+    │   └── fixtures/
+    ├── task002/
+    └── task003/
 ```
 
-`task.yaml` 保存任务元数据，`instruction.md` 是提供给模型的题目，`setup.ps1` 创建初始状态，`check.ps1` 验证最终结果，`reference.ps1` 用于确认任务可解和检查器有效，`fixtures/` 存放任务输入。
+`task.json` 保存任务元数据，PowerShell 可以直接使用 `ConvertFrom-Json` 解析。`instruction.md` 是提供给模型的题目，`setup.ps1` 创建初始状态，`check.ps1` 验证最终结果，`reference.ps1` 用于确认任务可解和检查器有效，`fixtures/` 存放任务输入。
+
+三个任务目录使用相同结构。`task001` 是可通过的 Hello World 冒烟任务，`task002` 和 `task003` 的 `status` 为 `draft`，仅用于占位。
 
 ## 当前状态
 
-项目目前处于初始化阶段。评测方向、任务结构和指标原则已经确定，详细设计见 [PowerShell-Bench 设计草案](docs/PowerShell-Bench设计草案.md)。运行器和任务模板尚未实现，下一步需要确定 `task.yaml` 字段、检查器输出协议和统一执行流程。
+项目目前处于初始化阶段。评测方向、任务结构和指标原则已经确定，详细设计见 [PowerShell-Bench 设计草案](docs/PowerShell-Bench设计草案.md)。三个任务骨架和 `task.json` 格式已经建立，`task001` 提供了可执行的最小验收链路。runner 仍是占位，下一步需要单独设计临时工作区、Agent 会话和验收进程的实现。

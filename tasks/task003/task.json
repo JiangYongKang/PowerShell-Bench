@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "id": "task003",
+  "version": "0.1.0",
+  "name": "Placeholder Task 003",
+  "description": "待补充的任务骨架。",
+  "status": "draft",
+  "category": "placeholder",
+  "tags": [],
+  "powershell": {
+    "versions": [
+      "5.1"
+    ]
+  },
+  "workspace": {
+    "mode": "temporary",
+    "copy_fixtures": true
+  },
+  "agent": {
+    "timeout_sec": 300,
+    "max_turns": 20
+  },
+  "verifier": {
+    "mode": "process",
+    "timeout_sec": 60
+  },
+  "artifacts": []
+}

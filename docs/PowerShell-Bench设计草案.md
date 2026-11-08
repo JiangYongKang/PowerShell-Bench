@@ -91,7 +91,7 @@ Windows 容器和 Linux 容器并不等价，PowerShell 5.1、PowerShell 7、系
 2. 运行任务的初始化脚本，生成已知输入文件和状态。
 3. 在专用低权限账户下运行 PowerShell，并将工作区设为当前目录。
 4. 限制任务只处理工作区中的文件；记录命令、stdout、stderr、退出码和文件变化。
-5. 在独立的评分逻辑中检查最终状态和副作用。
+5. 由独立的 PowerShell 验收进程检查最终状态和副作用；验收进程可以读取临时工作区，但不与 Agent 共用会话。
 6. 保存结果后清理该次运行的工作目录。
 
 **独立工作目录本身不是安全沙箱。** 任意 PowerShell 命令仍可能访问工作区之外的文件或网络。因此，若执行不受限制的模型命令，应使用专用、低权限且不含用户数据的机器，并增加进程超时、网络限制和危险操作防护。评分器与隐藏测试数据不得放入模型可写的工作区。
@@ -110,26 +110,29 @@ Windows 容器和 Linux 容器并不等价，PowerShell 5.1、PowerShell 7、系
 PowerShellBench/
 ├── README.md
 ├── tasks/
-│   └── file-organize-001/
-│       ├── task.yaml
-│       ├── instruction.md
-│       ├── setup.ps1
-│       ├── check.ps1
-│       ├── reference.ps1
-│       └── fixtures/
+│   ├── task001/
+│   │   ├── README.md
+│   │   ├── task.json
+│   │   ├── instruction.md
+│   │   ├── setup.ps1
+│   │   ├── check.ps1
+│   │   ├── reference.ps1
+│   │   └── fixtures/
+│   ├── task002/
+│   └── task003/
 └── runner/
     └── Invoke-Benchmark.ps1
 ```
 
 - `README.md`：项目目标、评测边界和如何运行任务。
 - `tasks/`：一题一个目录，初始数据、题目和检查逻辑放在一起。
-- `task.yaml`：任务 ID、类别、PowerShell 版本要求、超时和标签等元数据。
+- `task.json`：任务 ID、类别、PowerShell 版本要求、超时和标签等元数据，使用 PowerShell 原生 JSON 解析。
 - `instruction.md`：提供给模型的任务描述，不包含答案或隐藏评分细节。
 - `setup.ps1`：创建任务所需的初始工作区状态。
 - `check.ps1`：在任务结束后检查结果，输出机器可读的评分数据。
 - `reference.ps1`：人工参考操作，用于验证任务本身和 checker 可以通过。
 - `fixtures/`：任务输入文件，例如日志、CSV、JSON 和中文文件名样本。
-- `runner/Invoke-Benchmark.ps1`：统一创建工作区、调用执行后端、记录过程并启动评分。
+- `runner/Invoke-Benchmark.ps1`：runner 占位，后续统一创建工作区、调用执行后端、记录过程并启动评分。
 
 首版暂不需要单独的 leaderboard、复杂插件系统、贡献者审批流水线或多种环境后端。等任务数量和运行方式稳定后，再考虑增加。
 
